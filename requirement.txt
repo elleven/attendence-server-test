@@ -1,0 +1,14 @@
+
+# pip install -r requirement
+django == 1.11.24
+djangorestframework == 3.8.2
+MySQL-python == 1.2.5
+requests == 2.22.0
+request == 2019.4.13
+# pywin32 == 224
+schedule == 0.6.0
+django-crontab == 0.7.1
+python-ldap == 3.2.0
+jinja2 == 2.10.3
+openpyxl == 2.6.4
+xlrd == 1.2.0

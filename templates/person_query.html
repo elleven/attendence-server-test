@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% load query_tags %}
+{% block title %}
+个人考勤查询
+{% endblock %}
+{% block content %}
+
+<div>
+	<nav class="breadcrumb" ><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 考勤查询 <span class="c-gray en">&gt;</span> 个人考勤查询 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+	<div class="page-container">
+
+		<form id="queryRecords" action="/attendence/query" method="get">
+			日期范围：
+			<input name="stime" type="text" placeholder="{{stime}}" onfocus="WdatePicker({ maxDate:'#F{$dp.$D(\'logmax\')||\'%y-%M-%d\'}' })" id="logm" class="input-text Wdate" style="width:120px;">
+            -
+			<input name="etime" type="text" placeholder="{{etime}}" onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'logmin\')}',maxDate:'%y-%M-%d' })" id="logmax" class="input-text Wdate" style="width:120px;">
+			<input type="text" name="jobnumber" id="jobnumber" placeholder="员工工号" style="width:250px" class="input-text">
+			<button name="" id="query-go" class="btn btn-success" type="submit"><i class="Hui-iconfont">&#xe665;</i> 查询</button>
+            <button name="" id="query-dowload" class="btn btn-success" type="button" onclick="tableToExcel('query-result','{{ execfilename }}-{{ page_obj.number }}')">导出</button>
+		</form>
+        <p>注意：</p>
+        <p>1、请输入标准的5位员工工号查询 例如 00416</p>
+        <p>2、查询限一个月内的考勤记录</p>
+    </div>
+    <div class="mt-20">
+			<table id="query-result" class="table table-border table-bordered table-bg table-hover table-sort">
+				<thead>
+					<tr class="">
+						<th width="5">姓名</th>
+						<th width="5">工号</th>
+                        <th width="20">部门</th>
+						<th width="10">日期</th>
+						<th width="40">签到时间</th>
+						<th width="40">签退时间</th>
+						<th width="5">出勤时间</th>
+                        <th width="5">请假类型</th>
+                        <th width="20">请假详情</th>
+					</tr>
+				</thead>
+				<tbody id="query-result">
+                {% for record in records %}
+                    <tr class="text-c va-m">
+                        <td class="text-l" align="center">{{userobj.name}}</td>
+                        <td class="text-l" align="center">{{jobnumber}}</td>
+                        <td class="text-l" align="center">{{deptobj.name}}</td>
+                        {% check_clock_time record %}
+                        {% check_approval_info record approval_info %}
+
+                    </tr>
+                {% endfor %}
+                </tbody>
+			</table>
+     <div class="text-c">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?stime={{ stime }}&etime={{ etime }}&jobnumber={{ jobnumber }}&page={{ page_obj.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ page_obj.number }} of {{ paginator.num_pages }}.
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?stime={{ stime }}&etime={{ etime }}&jobnumber={{ jobnumber }}&page={{ page_obj.next_page_number }}">next</a>
+            {% endif %}
+        </span>
+    </div>
+    </div>
+</div>
+
+<!--<script type="text/javascript" src="/static/lib/zTree/v3/js/jquery.ztree.all-3.5.min.js"></script>-->
+<script type="text/javascript" src="/static/lib/My97DatePicker/4.8/WdatePicker.js"></script>
+<script type="text/javascript" src="/static/lib/datatables/1.10.15/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/static/lib/laypage/1.2/laypage.js"></script>
+    <script type="text/javascript">
+    function base64 (content) {
+       return window.btoa(unescape(encodeURIComponent(content)));
+    }
+    /*
+    *@tableId: table的Id
+    *@fileName: 要生成excel文件的名字（不包括后缀，可随意填写）
+    */
+    function tableToExcel(tableID,fileName){
+        var table = document.getElementById(tableID);
+      var excelContent = table.innerHTML;
+      var excelFile = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:x='urn:schemas-microsoft-com:office:excel' xmlns='http://hr.tigerbrokers.com/'>";
+      excelFile += "<head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head>";
+      excelFile += "<body><table>";
+      excelFile += excelContent;
+      excelFile += "</table></body>";
+      excelFile += "</html>";
+      var link = "data:application/vnd.ms-excel;base64," + base64(excelFile);
+      var a = document.createElement("a");
+      a.download = fileName+".xls";
+      a.href = link;
+      a.click();
+    }
+    </script>
+<!--<script type="text/javascript">
+$('#query-go').click(function () {
+    $.ajax({
+        type: "get",
+        url: "/records/query",
+        cache: false,
+        data: $('#queryRecords').serialize(),
+        success: function (data) {
+            var tbody = $('#query-result').empty();
+            $.each(data, function (idx, item) {
+                tbody.append(
+                    "<tr class=\"text-c va-m\">" +
+                    "<td class=\"text-l\">" + item.username + "</td>" +
+                    "<td class=\"text-l\">" + item.jobnumber + "</td>" +
+                    "<td class=\"text-l\">" + item.record_date + "</td>" +
+                    "<td class=\"text-l\">" + item.clockin_time + "</td>" +
+                    "<td class=\"text-l\">" + item.clockout_time + "</td>" +
+                    "<td class=\"text-l\">" + item.worktime + "</td>" +
+                    "</tr>");
+            });
+        },
+    });
+});
+</script> -->
+{% endblock %}

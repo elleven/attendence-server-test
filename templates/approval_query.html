@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}
+个人休假信息查询
+{% endblock %}
+{% block content %}
+<div>
+	<nav class="breadcrumb" ><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 考勤查询 <span class="c-gray en">&gt;</span> 个人休假查询 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+	<div class="page-container">
+		<form id="queryRecords" action="/approval/query" method="get">
+			日期范围：
+			<input name="stime" type="text" placeholder="{{stime}}" onfocus="WdatePicker({ maxDate:'#F{$dp.$D(\'logmax\')||\'%y-%M-%d\'}' })" id="logm" class="input-text Wdate" style="width:120px;">
+			-
+			<input name="etime" type="text" placeholder="{{etime}}" onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'logmin\')}',maxDate:'%y-%M-%d' })" id="logmax" class="input-text Wdate" style="width:120px;">
+			<input type="text" name="jobnumber" id="jobnumber" placeholder="{{jobnumber}}" style="width:250px" class="input-text">
+			<button name="" id="query-go" class="btn btn-success" type="submit"><i class="Hui-iconfont">&#xe665;</i> 查询</button>
+		</form>
+    </div>
+    <div class="mt-20">
+			<table class="table table-border table-bordered table-bg table-hover table-sort" >
+				<thead>
+					<tr class="text-c">
+						<th width="20">姓名</th>
+						<th width="20">工号</th>
+                        <th width="40">部门</th>
+						<th width="40">开始时间</th>
+						<th width="40">结束时间</th>
+						<th width="20">请假类型</th>
+						<th width="40">请假说明</th>
+                        <th width="20">状态</th>
+					</tr>
+				</thead>
+				<tbody id="query-result">
+                {% for record in records %}
+                    <tr class="text-c va-m">
+                        <td class="text-l" align="center">{{userobj.name}}</td>
+                        <td class="text-l" align="center">{{jobnumber}}</td>
+                        <td class="text-l" align="center">{{deptobj.name}}</td>
+                        <td class="text-l" align="center">{{record.start_time}}</td>
+                        <td class="text-l" align="center">{{record.end_time}}</td>
+                        <td class="text-l" align="center">{{record.aproval_type}}</td>
+                        <td class="text-l" align="center">{{record.approval_reason}}</td>
+                        <td class="text-l" align="center">{{record.status}}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+			</table>
+     <div class="text-c">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?stime={{ stime }}&etime={{ etime }}&jobnumber={{ jobnumber }}&page={{ page_obj.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ page_obj.number }} of {{ paginator.num_pages }}.
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?stime={{ stime }}&etime={{ etime }}&jobnumber={{ jobnumber }}&page={{ page_obj.next_page_number }}">next</a>
+            {% endif %}
+        </span>
+    </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="/static/lib/My97DatePicker/4.8/WdatePicker.js"></script>
+<script type="text/javascript" src="/static/lib/datatables/1.10.15/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/static/lib/laypage/1.2/laypage.js"></script>
+{% endblock %}

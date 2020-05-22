@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load query_tags %}
+{% block title %}
+部门详情
+{% endblock %}
+{% block content %}
+    <div class="page-container">
+    <div class="cl pd-20" style=" background-color:#5bacb6">
+  <!--<img class="avatar avatar-XL l" src="images/user.png">-->
+  <dl style="color:#fff">
+      <dt><span class="f-22">公司:  老虎集团</span></dt>
+      <dt><span class="f-18">部门:  {{ deptobj.name }}</span> <span class="f-18">员工数：{{ userobjs|length }}</span></dt>
+  </dl>
+</div>
+<div class="mt-20">
+  <table class="table">
+    <tbody>
+     <thead>
+        <tr class="">
+            <th width="1">姓名</th>
+            <th width="1">工号</th>
+            <th width="5">门禁卡ID</th>
+            <th width="20">用户ID</th>
+            <th width="10">部门</th>
+            <th width="20">邮箱</th>
+            <th width="1">工作地址</th>
+        </tr>
+        </thead>
+      <tbody id="query-result">
+            {% for userobj in userobjs %}
+                <tr class="text-c va-m">
+                    <td class="text-l">{{userobj.name}}</td>
+                    <td class="text-l">{{userobj.jobnumber}}</td>
+                    <td class="text-l">{{userobj.attendence_id}}</td>
+                    <td class="text-l">{{userobj.userid}}</td>
+                    <td class="text-l">{{deptobj.name}}</td>
+                    <td class="text-l">{{userobj.email}}</td>
+                    <td class="text-l">{{userobj.workplace}}</td>
+                </tr>
+            {% endfor %}
+      </tbody>
+  </table>
+</div>
+</div>
+{% endblock %}

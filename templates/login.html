@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load query_tags %}
+{% block title %}
+登陆
+{% endblock %}
+{% block content %}
+<div class="header"></div>
+<div class="loginWraper">
+  <div id="loginform" class="loginBox">
+    <form class="form form-horizontal" action="/login" method="post">
+          {% csrf_token %}
+      <div class="row cl">
+        <label class="form-label col-xs-3"><i class="Hui-iconfont">&#xe60d;</i></label>
+        <div class="formControls col-xs-8">
+          <input id="" name="jobnumber" type="text" placeholder="工号" class="input-text size-L">
+        </div>
+      </div>
+      <div class="row cl">
+        <label class="form-label col-xs-3"><i class="Hui-iconfont">&#xe60e;</i></label>
+        <div class="formControls col-xs-8">
+          <input id="" name="password" type="password" placeholder="密码" class="input-text size-L">
+        </div>
+      </div>
+        {% if message %}
+      <div class="row cl">
+          <div class="formControls col-xs-8 col-xs-offset-3">
+              <div class="alert alert-warning">{{ message }}</div>
+          </div>
+       </div>
+        {% endif %}
+      <div class="row cl">
+        <div class="formControls col-xs-8 col-xs-offset-3">
+          <label for="online">
+            <input type="checkbox" name="online" id="online" value="">
+            使我保持登录状态</label>
+        </div>
+      </div>
+      <div class="row cl">
+        <div class="formControls col-xs-8 col-xs-offset-3">
+          <button type="submit" class="btn btn-success radius size-L">&nbsp;登&nbsp;&nbsp;&nbsp;&nbsp;录&nbsp;</button>
+          <button type="reset" class="btn btn-default radius size-L">&nbsp;取&nbsp;&nbsp;&nbsp;&nbsp;消&nbsp;</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="footer">考勤后台-测试</div>
+<link href="/static/h-ui/css/H-ui.min.css" rel="stylesheet" type="text/css" />
+<link href="/static/h-ui.admin/css/H-ui.login.css" rel="stylesheet" type="text/css" />
+<link href="/static/h-ui.admin/css/style.css" rel="stylesheet" type="text/css" />
+<link href="/static/lib/Hui-iconfont/1.0.8/iconfont.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="/static/lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="/static/h-ui/js/H-ui.min.js"></script>
+{% endblock %}

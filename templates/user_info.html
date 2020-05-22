@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load query_tags %}
+{% block title %}
+用户信息
+{% endblock %}
+{% block content %}
+<div class="cl pd-20" style=" background-color:#5bacb6">
+  <!--<img class="avatar avatar-XL l" src="/static/images/user.png">-->
+  <dl style="margin-left:80px; color:#fff">
+    <dt><span class="f-18">{{ userobj.name }}</span> <span class="pl-10 f-12">工号：{{ userobj.jobnumber }}</span></dt>
+    <dd class="pt-10 f-12" style="margin-left:0">这家伙很懒，什么也没有留下</dd>
+  </dl>
+</div>
+<div class="pd-20">
+  <table class="table">
+    <tbody>
+      <tr>
+        <th class="text-r" width="80">用户ID：</th>
+        <td>{{ userobj.userid }}</td>
+      </tr>
+      <tr>
+        <th class="text-r">考勤ID： </th>
+        <td>{{ userobj.attendence_id }}</td>
+      </tr>
+      <tr>
+        <th class="text-r">邮箱：</th>
+        <td>{{ userobj.email }}</td>
+      </tr>
+      <tr>
+        <th class="text-r">工作地址：</th>
+        <td>{{ userobj.workplace }}</td>
+      </tr>
+      <tr>
+        <th class="text-r">部门：</th>
+        <td>{{ userobj.department_id }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+{% endblock %}

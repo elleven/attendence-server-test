@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% load query_tags %}
+{% block title %}
+个人考勤统计
+{% endblock %}
+{% block content %}
+    <div>
+	<nav class="breadcrumb" ><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 考勤统计 <span class="c-gray en">&gt;</span> 个人考勤统计 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+	<div class="page-container">
+             <form id="queryRecords" action="/attendence/stats" method="get">
+                 <span class="c-red">*</span> 请选择月份：
+                <span class="select-box" style="position: relative;width:100px;">
+						<select class="select" id="month" name="month">
+                            <option value="0">请选择月份</option>
+　　                         <option value="1">1月</option>
+　　                         <option value="2">2月</option>
+　　                         <option value="3">3月</option>
+　　                         <option value="4">4月</option>
+　                           <option value="5">5月</option>
+　                           <option value="6">6月</option>
+　                           <option value="7">7月</option>
+　　                         <option value="8">8月</option>
+　　                         <option value="9">9月</option>
+　　                         <option value="10">10月</option>
+　　                         <option value="11">11月</option>
+　　                         <option value="12">12月</option>
+						</select>
+						</span>
+                <span class="c-red"></span> 部门：
+                 <span class="select-box" style="position: relative;width:200px;">
+                 <input class="org-select" id="select-name"  onclick="showTree();"  readonly style="width:180px;">
+                 <i class="trg" style="position: absolute;"></i>
+                 <input id="select-value" type="hidden" name="deptId">
+                  <div id="menuContent" class="zTreeDemoBackground left" style="display:none;position: absolute;background-color:#e9e9e9">
+                    <ul id="treeDemo2" class="ztree" style="margin-top:0; width:180px;"></ul>
+                  </div>
+                </span>
+                 或者
+                <input type="text" name="jobnumber" id="jobnumber" placeholder="员工工号" style="width:250px" class="input-text">
+             <button name="" id="query-go" class="btn btn-success" type="submit"><i class="Hui-iconfont">&#xe665;</i> 查询</button>
+            <button name="" id="query-dowload" class="btn btn-success" type="button" onclick="tableToExcel('query-result','{{ execfilename }}')">导出</button>
+             </form>
+        <p>注意：</p>
+        <p>1、可以根据部门查询也可以输入工号查询，限二选一</p>
+        <p>2、默认查询统计当前年份考勤</p>
+    </div>
+        <div class="mt-20">
+			<table id="query-result" class="table table-border table-bordered table-bg table-hover table-sort">
+				<thead>
+					<tr class="">
+						<th width="5">姓名</th>
+						<th width="5">工号</th>
+                        <th width="10">部门</th>
+						<th width="5">月份</th>
+						<th width="5">签到未打卡次数</th>
+                        <th width="5">签退未打卡次数</th>
+						<th width="5">出勤时间<10次数</th>
+						<th width="5">迟到次数</th>
+                        <th width="5">早退次数</th>
+					</tr>
+				</thead>
+				<tbody id="query-result">
+                {% for record in records %}
+                    <tr class="text-c va-m">
+                        <td class="text-l" >{{record.name}}</td>
+                        <td class="text-l" >{{record.jobnumber}}</td>
+                        <td class="text-l" >{{record.deptname}}</td>
+                        <td class="text-l" >{{record.month}}</td>
+                        <td class="text-l" >{{record.unclockin_num}}</td>
+                        <td class="text-l" >{{record.unclockout_num}}</td>
+                        <td class="text-l" >{{record.worktime_lt_num}}</td>
+                        <td class="text-l" >{{record.late_num}}</td>
+                        <td class="text-l" >{{record.early_num}}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+			</table>
+    </div>
+    </div>
+<script type="text/javascript" src="/static/lib/zTree/v3/js/jquery.ztree.all-3.5.min.js"></script>
+<script type="text/javascript" src="/static/lib/datatables/1.10.15/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/static/lib/laypage/1.2/laypage.js"></script>
+<script type="text/javascript">
+var d=new Date();
+m = d.getMonth();
+document.getElementById("month").value = m;
+</script>
+<script type="text/javascript">
+
+   function base64 (content) {
+       return window.btoa(unescape(encodeURIComponent(content)));
+    }
+    /*
+    *@tableId: table的Id
+    *@fileName: 要生成excel文件的名字（不包括后缀，可随意填写）
+    */
+    function tableToExcel(tableID,fileName){
+        var table = document.getElementById(tableID);
+      var excelContent = table.innerHTML;
+      var excelFile = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:x='urn:schemas-microsoft-com:office:excel' xmlns='http://hr.tigerbrokers.com/'>";
+      excelFile += "<head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head>";
+      excelFile += "<body><table>";
+      excelFile += excelContent;
+      excelFile += "</table></body>";
+      excelFile += "</html>";
+      var link = "data:application/vnd.ms-excel;base64," + base64(excelFile);
+      var a = document.createElement("a");
+      a.download = fileName+".xls";
+      a.href = link;
+      a.click();
+    }
+ var setting = {
+        view: {
+          dblClickExpand: false,
+          selectedMulti: false
+        },
+        data: {
+          simpleData: {
+            enable: true
+          }
+        },
+        callback: {
+            onClick: onClick
+        }
+      };
+
+ function onClick(event, treeId, treeNode) {
+      $('#select-name').val(treeNode.name);
+      $('#select-value').val(treeNode.id)
+      hideTree();
+  };
+    // 点击下拉框时展示tree
+ function showTree(){
+    if($('#menuContent').css('display') == 'none'){
+         $('#menuContent').css('display','block');
+     } else{
+         $('#menuContent').css('display','none');
+     }
+     $("body").bind("mousedown", onBodyDownByActionType);
+ }
+ function hideTree() {
+    $('#menuContent').css('display','none');
+    $("body").unbind("mousedown", onBodyDownByActionType);
+    return false;
+}
+
+function onBodyDownByActionType(event) {
+    if (event.target.id.indexOf('treeDemo2') == -1){
+        if(event.target.id != 'selectDevType'){
+            hideTree();
+        }
+    }
+}
+$(function(){
+        var t = $("#treeDemo2");
+        $.fn.zTree.init(t, setting, {{ org_data|safe}});
+});
+
+</script>
+<style>
+.trg {
+    width: 0;
+    height: 0;
+    border-left: 3px solid transparent;
+    border-right: 3px solid transparent;
+    border-top: 6px solid black;;
+    position: absolute;
+    left: 181px;
+    top: 8px;
+}
+.org-select{
+    cursor: default;
+    z-index: -1;
+    width:200px;
+}
+</style>
+{% endblock %}
